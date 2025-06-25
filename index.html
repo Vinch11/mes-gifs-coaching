@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TWO4 Coaching App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --background: #0A0F2A;
+            --surface: #12193D;
+            --primary: #00F5D4; /* Cyan */
+            --secondary: #F900B5; /* Electric Pink */
+            --accent-warmup: #FFD700; /* Gold/Yellow */
+            --text-primary: #FFFFFF;
+            --text-secondary: #AEBCCF;
+            --border-color: #232a53;
+            --cyan-glow: rgba(0, 245, 212, 0.2);
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-secondary);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background-color: var(--background);
+        }
+
+        .btn-primary, .next-btn {
+            background-color: var(--primary);
+            color: var(--background);
+            font-weight: 700;
+            font-family: 'Poppins', sans-serif;
+            padding: 12px 28px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            border: 2px solid var(--primary);
+            text-transform: uppercase;
+            box-shadow: 0 0 15px rgba(0, 245, 212, 0.3);
+        }
+        .btn-primary:hover, .next-btn:hover {
+            background-color: transparent;
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+        
+        .prev-btn, .btn-danger {
+            background-color: transparent;
+            color: var(--text-secondary);
+            border: 2px solid var(--border-color);
+            font-weight: 600;
+            padding: 12px 28px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+        .prev-btn:hover {
+             color: var(--secondary);
+             border-color: var(--secondary);
+        }
+        .btn-danger:hover {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .timer-btn {
+            background-color: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            box-shadow: 0 0 10px var(--cyan-glow);
+        }
+        .timer-btn:hover {
+            background-color: var(--primary);
+            color: var(--background);
+            box-shadow: 0 0 15px rgba(0, 245, 212, 0.4);
+        }
+        
+        .main-container {
+             background-color: var(--surface);
+             border: 1px solid var(--border-color);
+             border-radius: 16px;
+             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .input-field {
+            background-color: var(--background);
+            color: var(--text-primary);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 245, 212, 0.2);
+        }
+        
+        h1, h2, h3 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800;
+            color: var(--text-primary);
+            text-transform: uppercase;
+        }
+        
+        .hidden { display: none; }
+        .fade-in { animation: fadeInAnimation 0.8s ease-in-out; }
+        .step-container { animation: slideIn 0.6s ease-out; }
+        @keyframes fadeInAnimation { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+        
+        .progress-bar-container { background-color: #222; border-radius: 99px; overflow: hidden; }
+        .progress-bar {
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            height: 10px;
+            border-radius: 99px;
+            transition: width 0.5s ease-out;
+        }
+
+        .card {
+            background-color: var(--surface);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .card:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary);
+        }
+        .card.selected {
+            border-color: var(--secondary);
+            background-color: var(--background);
+        }
+
+        .accordion-item {
+            background-color: var(--surface);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            transition: background-color 0.3s ease;
+            overflow: hidden;
+        }
+        .accordion-header.active .accordion-icon {
+            transform: rotate(180deg);
+            color: var(--secondary);
+        }
+        .accordion-content {
+            transition: max-height 0.5s ease-in-out, padding 0.5s ease-in-out, border-top-width 0.3s ease-in-out;
+            max-height: 0;
+            overflow: hidden;
+            border-top: 0px solid var(--border-color);
+        }
+        .accordion-header.active + .accordion-content {
+             border-top-width: 1px;
+        }
+        .loader {
+            border: 4px solid #333;
+            border-left-color: var(--primary);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .text-warmup { color: var(--accent-warmup); }
+        .border-warmup { border-color: var(--accent-warmup); }
+        .text-workout { color: var(--primary); }
+        .border-workout { border-color: var(--primary); }
+        .text-cooldown { color: var(--secondary); }
+        .border-cooldown { border-color: var(--secondary); }
+        
+        /* New styles for day grid */
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 15px rgba(0, 245, 212, 0.4); }
+            50% { box-shadow: 0 0 25px rgba(0, 245, 212, 0.8); }
+        }
+        .day-box-current {
+            animation: pulse 2s infinite;
+        }
+        .day-box-completed::after {
+            content: attr(data-word);
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+            background-color: rgba(0,0,0,0.6);
+            font-size: 0.8em;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transform: rotate(-10deg);
+            border-radius: inherit;
+        }
+
+    </style>
+</head>
+<body class="bg-background">
+
+    <div id="loading-screen" class="fixed inset-0 bg-background flex flex-col justify-center items-center z-50">
+        <div class="loader"></div>
+        <p class="text-text-primary mt-4 text-lg font-light tracking-wider">Chargement...</p>
+    </div>
+
+    <div id="questionnaire-screen" class="container mx-auto p-4 sm:p-6 lg:p-8 hidden">
+        <div class="max-w-3xl mx-auto main-container p-4 sm:p-8 md:p-10 rounded-xl fade-in">
+            <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-center mb-4 text-primary">Créez votre profil</h1>
+            <div class="mb-6 sm:mb-8 progress-bar-container"><div id="progress-bar" class="progress-bar" style="width: 25%"></div></div>
+            <form id="questionnaire-form">
+                <div id="step-1" class="step-container">
+                    <h2 class="text-lg sm:text-xl md:text-2xl mb-4 sm:mb-6">Étape 1: Qui êtes-vous ?</h2>
+                    <div class="space-y-4 sm:space-y-6"> <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6"> <div><label class="block text-text-primary mb-1 sm:mb-2">Prénom</label><input type="text" name="firstname" class="w-full input-field" required></div> <div><label class="block text-text-primary mb-1 sm:mb-2">Nom</label><input type="text" name="lastname" class="w-full input-field" required></div> <div><label class="block text-text-primary mb-1 sm:mb-2">Âge</label><input type="number" name="age" class="w-full input-field" required></div> <div><label class="block text-text-primary mb-1 sm:mb-2">Sexe</label><select name="gender" class="w-full input-field"><option value="homme">Homme</option><option value="femme">Femme</option><option value="autre">Autre</option></select></div> </div> </div>
+                    <div class="mt-8 text-right"><button type="button" class="btn-primary next-btn">Suivant</button></div>
+                </div>
+                <div id="step-2" class="step-container hidden">
+                    <h2 class="text-lg sm:text-xl md:text-2xl mb-4 sm:mb-6">Étape 2: Votre parcours</h2>
+                    <div class="space-y-6 sm:space-y-8"> <div> <label class="block text-text-primary text-base sm:text-lg mb-2 sm:mb-3">Votre niveau d'expérience ?</label> <div class="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4"> <label class="p-3 sm:p-4 card text-center"><input type="radio" name="experience" value="debutant" class="hidden" required><span class="text-sm sm:text-base text-text-primary">Débutant</span></label> <label class="p-3 sm:p-4 card text-center"><input type="radio" name="experience" value="intermediaire" class="hidden"><span class="text-sm sm:text-base text-text-primary">Intermédiaire</span></label> <label class="p-3 sm:p-4 card text-center"><input type="radio" name="experience" value="avance" class="hidden"><span class="text-sm sm:text-base text-text-primary">Avancé</span></label> </div> </div> <div> <label class="block text-text-primary text-base sm:text-lg mb-2 sm:mb-3">Votre objectif principal ?</label> <div class="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4"> <label class="p-3 sm:p-4 card text-center"><input type="radio" name="goal" value="perte-poids" class="hidden" required><span class="text-sm sm:text-base text-text-primary">Perte de poids</span></label> <label class="p-3 sm:p-4 card text-center"><input type="radio" name="goal" value="masse-musculaire" class="hidden"><span class="text-sm sm:text-base text-text-primary">Prise de masse</span></label> <label class="p-3 sm:p-4 card text-center"><input type="radio" name="goal" value="forme" class="hidden"><span class="text-sm sm:text-base text-text-primary">Maintien / Forme</span></label> </div> </div> </div>
+                    <div class="mt-8 flex justify-between"><button type="button" class="prev-btn">Précédent</button><button type="button" class="next-btn">Suivant</button></div>
+                </div>
+                <div id="step-3" class="step-container hidden">
+                    <h2 class="text-lg sm:text-xl md:text-2xl mb-4 sm:mb-6">Étape 3: Votre équipement</h2>
+                    <p class="text-text-secondary mb-4">Sélectionnez ce que vous avez à disposition.</p>
+                    <div class="space-y-3 sm:space-y-4"> <label class="p-3 sm:p-4 card flex items-center"><input type="checkbox" name="equipment" value="dumbbells" class="hidden"><span class="text-sm sm:text-base text-text-primary">Haltères</span></label> <label class="p-3 sm:p-4 card flex items-center"><input type="checkbox" name="equipment" value="bands" class="hidden"><span class="text-sm sm:text-base text-text-primary">Bandes de résistance</span></label> </div>
+                    <div class="mt-8 flex justify-between"><button type="button" class="prev-btn">Précédent</button><button type="button" class="next-btn">Suivant</button></div>
+                </div>
+                <div id="step-4" class="step-container hidden">
+                     <h2 class="text-lg sm:text-xl md:text-2xl mb-4 sm:mb-6">Étape 4: Zones à cibler</h2>
+                     <p class="text-text-secondary mb-4">Quelle partie du corps souhaitez-vous prioriser ?</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4"> <label class="p-3 sm:p-4 card text-center"><input type="radio" name="target" value="fullbody" class="hidden" required><span class="text-sm sm:text-base text-text-primary">Corps complet</span></label> <label class="p-3 sm:p-4 card text-center"><input type="radio" name="target" value="upper" class="hidden"><span class="text-sm sm:text-base text-text-primary">Haut du corps</span></label> <label class="p-3 sm:p-4 card text-center"><input type="radio" name="target" value="lower" class="hidden"><span class="text-sm sm:text-base text-text-primary">Bas du corps</span></label> <label class="p-3 sm:p-4 card text-center"><input type="radio" name="target" value="core" class="hidden"><span class="text-sm sm:text-base text-text-primary">Abdos / Tronc</span></label> </div>
+                    <div class="mt-8 flex justify-between"><button type="button" class="prev-btn">Précédent</button><button type="submit" class="btn-primary">Générer mon programme</button></div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Program Overview Screen -->
+    <div id="program-overview-screen" class="container mx-auto p-4 sm:p-6 lg:p-8 hidden fade-in">
+        <h1 class="text-3xl sm:text-4xl font-bold tracking-wider mb-2" id="overview-welcome-message">Votre Programme</h1>
+        <p class="text-text-secondary mb-8">Cliquez sur le jour actuel pour commencer votre séance.</p>
+        <div id="days-grid" class="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-7 gap-3 sm:gap-4">
+            <!-- Les jours seront générés ici -->
+        </div>
+    </div>
+
+    <!-- Daily Workout Screen -->
+    <div id="workout-screen" class="container mx-auto p-4 sm:p-6 lg:p-8 hidden fade-in">
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10">
+             <div>
+                <button id="back-to-overview-btn" class="text-text-secondary hover:text-primary transition-colors mb-4">&larr; Retour au programme</button>
+                 <h1 class="text-3xl sm:text-4xl font-bold tracking-wider" id="workout-day-title">Jour X</h1>
+                 <p class="text-text-secondary">Voici votre séance du jour. Donnez tout !</p>
+            </div>
+            <div class="text-left md:text-right mt-4 md:mt-0 border border-border-color rounded-lg p-3">
+                <p class="text-xl sm:text-2xl font-bold text-primary" id="current-day-display">Jour 1 / 28</p>
+                <p class="text-text-secondary font-light text-xs">ID: <span id="user-id-display" class="font-mono"></span></p>
+            </div>
+        </header>
+        <div id="workout-container" class="space-y-12"></div>
+        <div class="mt-12 flex flex-col sm:flex-row justify-center items-center gap-4">
+            <button id="reset-program-btn" class="btn-danger w-full sm:w-auto">Mettre fin au programme</button>
+            <button id="complete-day-btn" class="btn-primary w-full sm:w-auto text-lg">Séance Terminée</button>
+        </div>
+        <div id="completion-message" class="hidden mt-8 text-center main-container p-6 md:p-8 rounded-lg fade-in">
+             <h2 class="text-2xl sm:text-3xl font-bold text-primary mb-4">Félicitations !</h2>
+             <p class="text-text-primary text-md sm:text-lg">Vous avez terminé votre programme de 28 jours. Votre discipline a payé !</p>
+             <button id="final-reset-btn" class="btn-primary mt-6">Démarrer un nouveau défi</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyDlfh6hE2KOX75dQc343vuAUSHTxkdSg9o",
+          authDomain: "mon-app-coaching-wix.firebaseapp.com",
+          projectId: "mon-app-coaching-wix",
+          storageBucket: "mon-app-coaching-wix.appspot.com",
+          messagingSenderId: "139971925883",
+          appId: "1:139971925883:web:6afba54f00e98c0d090fde",
+          measurementId: "G-LCN7LX65LR"
+        };
+        
+        const gifBaseUrl = "https://raw.githubusercontent.com/Vinch11/mes-gifs-coaching/main/";
+        
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = firebaseConfig.projectId;
+
+        const EXERCISES_DB = {
+            'bodyweight': {
+                'upper': ['asymmetrical push up', 'hindu push ups', 'pike push up', 'push up', 'decline push up', 'medicine ball push up', 'one arm tricep push up', 'staggered arm knee push up', 'staggered arm push up', 'tricep dips', 'triceps extension', 'bow and arrow pull', 'lawnmower pull', 't press'],
+                'lower': ['180 jump squat', 'alternating side lunge', 'ankle hops', 'bear squat', 'bulgarian split squat', 'butt kicks', 'calf raises', 'cossack squat', 'curtsy lunge', 'donkey kicks', 'double pulse squat jump', 'fire hydrant', 'frog jumps', 'glute bridge', 'high knees', 'jump squat', 'jumping lunges', 'lunges', 'pistol squat', 'plie squat calf raise', 'shrimp squat', 'single leg bridge', 'single leg deadlift', 'single leg squat kickback', 'split squat', 'squat', 'sumo squat', 'surrender', 'walking lunges', 'wall sit'],
+                'core': ['ab stretch', 'abdominal bridge', 'advanced bridge', 'alternating superman', 'ankle tap push ups', 'back extensions', 'bicycle crunches', 'bird dogs', 'boat twist', 'breakdancer kick', 'crunches', 'dead bug', 'diamond kicks', 'downward dog crunch', 'flutter kicks', 'frog crunches', 'heel touchers', 'inverted V plank', 'kick crunch', 'knee to elbow kickback', 'oblique crunch', 'plank', 'plank hip dips', 'plank jacks', 'plank leg lifts', 'plank rotation', 'plank shoulder taps', 'reverse crunches', 'roll up', 'russian twist', 'scissor kicks', 'side crunch', 'sit up', 'spiderman plank', 'sprinter crunch', 'superman', 'v ups', 'windshield wipers'],
+                'cardio': ['burpees', 'cross jacks', 'heisman', 'high knees', 'in and out jacks', 'jump rope', 'jumping jacks', 'mountain climbers', 'quick feet', 'run in place', 'skaters', 'speed bag punches', 'stutter steps', 'surfer burpees'],
+                'warmup': ['arm circles', 'neck rolls', 'wrist circles', 'ankle circles', 'hip circles', 'march in place', 'gate swings', 'leg swings'],
+                'stretch': ['biceps stretch', 'butterfly stretch', 'calf stretch', 'chest stretch', 'glute stretch', 'hamstring stretch', 'hip flexor stretch', 'lower back stretch', 'neck stretch', 'obliques stretch', 'quad stretch', 'shoulder stretch', 'triceps stretch', 'upper back stretch']
+            }, 'dumbbells': { 'upper': ['Arnold shoulder press', 'around the worlds', 'bent over lateral raise', 'bent over row', 'bicep curls', 'concentration curl', 'cross chest curl', 'dumbbell front raise', 'dumbbell lateral raise', 'dumbbell punches', 'dumbbell swing', 'hammer curls', 'shoulder press', 'wide row', 'wood chop'], 'lower': ['alternating dumbbell swing', 'dumbbell skier swing', 'dumbbell snatch'], 'core': ['dumbbell side bend'], 'fullbody': ['dumbbell thrusters', 'deadlift upright row', 'lunge twist'] }, 'bands': { 'upper': ['band kickback', 'lawnmower band pull', 'mid back band pull'], 'lower': ['band donkey kicks', 'lateral band walk', 'resistance band clamshell', 'squat band hip abduction'], 'core': ['band leg abduction crunch'] }
+        };
+
+        const screens = {
+            loading: document.getElementById('loading-screen'),
+            questionnaire: document.getElementById('questionnaire-screen'),
+            overview: document.getElementById('program-overview-screen'),
+            workout: document.getElementById('workout-screen')
+        };
+        const questionnaireForm = document.getElementById('questionnaire-form'), workoutContainer = document.getElementById('workout-container'), completeDayBtn = document.getElementById('complete-day-btn'), currentDayDisplay = document.getElementById('current-day-display'), userIdDisplay = document.getElementById('user-id-display'), welcomeMessage = document.getElementById('welcome-message'), completionMessage = document.getElementById('completion-message'), finalResetBtn = document.getElementById('final-reset-btn'), resetProgramBtn = document.getElementById('reset-program-btn'), progressBar = document.getElementById('progress-bar'), steps = Array.from(document.querySelectorAll('.step-container')), daysGrid = document.getElementById('days-grid'), overviewWelcomeMessage = document.getElementById('overview-welcome-message'), workoutDayTitle = document.getElementById('workout-day-title'), backToOverviewBtn = document.getElementById('back-to-overview-btn');
+        let currentUser = null, userData = null, timerStates = {}, currentStep = 0;
+
+        onAuthStateChanged(auth, async user => {
+            if (user) { currentUser = user; userIdDisplay.textContent = currentUser.uid.slice(0, 8); await loadUserData(); } 
+            else { 
+                try {
+                    await signInAnonymously(auth); 
+                } catch(error) {
+                    console.error("Firebase Anonymous Auth Error:", error);
+                    document.body.innerHTML = `<div class="fixed inset-0 bg-background flex flex-col justify-center items-center text-center p-8"><h1 class="text-3xl text-red-500 font-bold mb-4">Erreur d'Authentification Firebase</h1><p class="text-text-dark text-lg">${error.message}</p></div>`;
+                }
+            }
+        });
+        async function loadUserData() {
+            if (!currentUser) return;
+            const docRef = doc(db, "artifacts", appId, "users", currentUser.uid);
+            try { const docSnap = await getDoc(docRef); if (docSnap.exists()) { userData = docSnap.data(); showScreen('overview'); } else { showScreen('questionnaire'); } } 
+            catch (error) { console.error("Error loading data:", error); showScreen('questionnaire'); }
+        }
+        async function saveUserData() { if (!currentUser || !userData) return; const docRef = doc(db, "artifacts", appId, "users", currentUser.uid); try { await setDoc(docRef, userData); } catch (error) { console.error("Error saving data:", error); } }
+        async function resetUserData() {
+            if (window.confirm("Êtes-vous sûr de vouloir arrêter votre programme et recommencer le questionnaire ? Votre progression sera perdue.")) {
+                if (!currentUser) return;
+                const docRef = doc(db, "artifacts", appId, "users", currentUser.uid);
+                try { 
+                    await deleteDoc(docRef); 
+                    userData = null; 
+                    showScreen('questionnaire');
+                }
+                catch (error) { console.error("Error resetting data:", error); }
+            }
+        }
+        function showScreen(screenName) {
+            Object.values(screens).forEach(s => s.classList.add('hidden'));
+            screens[screenName].classList.remove('hidden');
+            if (screenName === 'questionnaire') {
+                currentStep = 0;
+                updateStepVisibility();
+                // No need to re-add static listeners, they are added once
+            } else if (screenName === 'overview') {
+                renderProgramOverview();
+            }
+        }
+        function addQuestionnaireEventListeners() {
+            document.querySelectorAll('#questionnaire-form .card input').forEach(input => {
+                input.addEventListener('change', e => {
+                    const card = e.target.closest('.card');
+                    if (input.type === 'radio') { document.querySelectorAll(`input[name="${input.name}"]`).forEach(radio => { radio.closest('.card').classList.remove('selected'); }); if(e.target.checked) { card.classList.add('selected'); } } 
+                    else if (input.type === 'checkbox') { card.classList.toggle('selected', e.target.checked); }
+                });
+            });
+        }
+        function updateStepVisibility() { steps.forEach((step, index) => step.classList.toggle('hidden', index !== currentStep)); progressBar.style.width = `${((currentStep + 1) / steps.length) * 100}%`; }
+        function validateStep(stepIndex) {
+            const currentStepElement = steps[stepIndex]; const inputs = currentStepElement.querySelectorAll('input[required]');
+            for (const input of inputs) { if (input.type === 'radio') { if (!questionnaireForm.querySelector(`input[name="${input.name}"]:checked`)) return false; } else if (!input.value.trim()) return false; }
+            return true;
+        }
+        
+        function generateFullProgram(profile) { return Array.from({ length: 28 }, (_, i) => generateDailyWorkout(i + 1, profile)); }
+        function getAvailableExercises(profile) {
+            let available = { ...EXERCISES_DB.bodyweight };
+            if (profile.equipment.includes('dumbbells')) { Object.keys(EXERCISES_DB.dumbbells).forEach(key => { available[key] = (available[key] || []).concat(EXERCISES_DB.dumbbells[key]); }); }
+            if (profile.equipment.includes('bands')) { Object.keys(EXERCISES_DB.bands).forEach(key => { available[key] = (available[key] || []).concat(EXERCISES_DB.bands[key]); }); }
+            return available;
+        }
+        function generateDailyWorkout(day, profile) {
+            const { experience, target } = profile, params = { debutant: { warmup: 3, workout: 7, cooldown: 3, sets: 2, time: 45, reps: 10, rest: 60 }, intermediaire: { warmup: 3, workout: 8, cooldown: 3, sets: 3, time: 45, reps: 12, rest: 45 }, avance: { warmup: 3, workout: 9, cooldown: 3, sets: 4, time: 50, reps: 15, rest: 30 } }[experience];
+            const exercisePool = getAvailableExercises(profile), targetRatios = { fullbody: { upper: .3, lower: .3, core: .2, cardio: .2 }, upper: { upper: .6, lower: .1, core: .2, cardio: .1 }, lower: { upper: .1, lower: .6, core: .2, cardio: .1 }, core: { upper: .2, lower: .2, core: .5, cardio: .1 } };
+            const workoutPlan = []; Object.keys(targetRatios[target]).forEach(area => { const count = Math.ceil(params.workout * targetRatios[target][area]); if (exercisePool[area] && exercisePool[area].length > 0) { workoutPlan.push(...pickExercises(exercisePool[area], count)); } });
+            const workout = [...new Set(workoutPlan)].slice(0, params.workout).map(name => {
+                const isTimeBased = Math.random() > 0.4;
+                return { name, type: isTimeBased ? 'time' : 'reps', value: isTimeBased ? Math.max(45, params.time) : params.reps, }
+            });
+            const warmup = pickExercises(exercisePool.warmup, params.warmup).map(name => ({ name, type: 'time', value: 45 }));
+            const cooldown = pickExercises(exercisePool.stretch, params.cooldown).map(name => ({ name, type: 'time', value: 60 }));
+            return { day, warmup, workout, cooldown, sets: params.sets, rest: params.rest };
+        }
+        function pickExercises(pool, count) { return [...pool].sort(() => .5 - Math.random()).slice(0, count); }
+        function renderProgramOverview() {
+            if (!userData) { showScreen('questionnaire'); return; }
+            overviewWelcomeMessage.textContent = `Votre Programme, ${userData.profile.firstname}!`;
+            daysGrid.innerHTML = '';
+            const completionWords = ['Terminé!', 'Well Done!', 'Yeah!', 'Validé!'];
+            for (let i = 1; i <= 28; i++) {
+                const dayBox = document.createElement('button');
+                dayBox.innerHTML = `<span>${i}</span>`;
+                let stateClasses = '';
+                if (i < userData.currentDay) {
+                    const word = completionWords[i % completionWords.length];
+                    dayBox.dataset.word = word;
+                    stateClasses = 'day-box-completed bg-surface text-text-secondary relative cursor-pointer hover:border-secondary';
+                } else if (i === userData.currentDay) {
+                    stateClasses = 'day-box-current bg-primary text-background font-bold cursor-pointer hover:bg-transparent hover:text-primary';
+                } else {
+                    stateClasses = 'bg-background text-text-secondary opacity-50 cursor-not-allowed';
+                }
+                dayBox.className = `day-box w-full h-16 sm:h-20 flex items-center justify-center text-lg font-bold rounded-lg border border-border-color transition-all duration-300 ${stateClasses}`;
+                if (i <= userData.currentDay) {
+                    dayBox.dataset.day = i;
+                }
+                daysGrid.appendChild(dayBox);
+            }
+        }
+        function renderWorkoutScreen(dayNumber) {
+            showScreen('workout');
+            const dayIndex = dayNumber - 1;
+            const todayWorkout = userData.plan[dayIndex];
+            workoutDayTitle.textContent = `Jour ${dayNumber}`;
+            currentDayDisplay.textContent = `Jour ${userData.currentDay} / 28`;
+            timerStates = {};
+            workoutContainer.innerHTML = `${createSectionHtml('Échauffement', todayWorkout.warmup, 'warmup', dayIndex)} ${createSectionHtml(`Entraînement (${todayWorkout.sets} séries)`, todayWorkout.workout, 'workout', dayIndex, `Prenez ${todayWorkout.rest} secondes de repos entre chaque série.`)} ${createSectionHtml('Retour au calme', todayWorkout.cooldown, 'cooldown', dayIndex)}`;
+            completeDayBtn.classList.toggle('hidden', dayNumber !== userData.currentDay);
+            resetProgramBtn.classList.toggle('hidden', dayNumber !== userData.currentDay);
+            completionMessage.classList.add('hidden');
+        }
+        function createSectionHtml(title, exercises, type, dayIndex, description = '') { return `<div> <h2 class="text-2xl sm:text-3xl font-bold text-${type} mb-4 pb-2 border-b-2 border-${type}/20 tracking-wider">${title}</h2> ${description ? `<p class="text-text-secondary mb-6">${description}</p>` : '<div class="mb-6"></div>'} <div class="space-y-3"> ${exercises.map((ex, i) => createAccordionItem(ex, `${dayIndex}-${type}-${i}`, type)).join('')} </div> </div>`; }
+        function createAccordionItem(exercise, id, type) {
+            const { name, type: exoType, value } = exercise, details = exoType === 'time' ? `${value} sec` : `${value} reps`;
+            if (exoType === 'time' && !timerStates[id]) { timerStates[id] = { duration: value, timeLeft: value, status: 'stopped', intervalId: null }; }
+            const gifUrl = `${gifBaseUrl}${name.replace(/ /g, '%20')}.gif`;
+            return `<div class="accordion-item"> <button class="accordion-header w-full p-4 flex justify-between items-center text-left"> <span class="text-md sm:text-lg font-medium text-text-primary capitalize">${name.replace('.gif', '')}</span> <div class="flex items-center gap-4"> <span class="font-bold text-${type} text-md sm:text-lg">${details}</span> <svg class="accordion-icon w-6 h-6 text-text-secondary transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg> </div> </button> <div class="accordion-content"> <div class="p-4 pt-0"> <div class="w-full aspect-video bg-background rounded-lg overflow-hidden mb-4 border border-border-color"> <img src="${gifUrl}" alt="Démonstration de ${name}" class="w-full h-full object-contain" loading="lazy" onerror="this.src='https://placehold.co/400x225/0A0F2A/F900B5?text=GIF+introuvable'"> </div> ${exoType === 'time' ? `<div class="timer-container" data-timer-id="${id}"> <p class="timer-display text-3xl sm:text-4xl font-mono font-bold text-text-primary mb-3 text-center">${formatTime(value)}</p> <div class="flex justify-center gap-4"> <button class="timer-btn" data-action="start">Lancer</button> <button class="timer-btn hidden" data-action="pause">Pause</button> <button class="timer-btn hidden" data-action="stop">Arrêter</button> </div> </div>` : ''} </div> </div> </div>`;
+        }
+        function displayCompletion() { welcomeMessage.textContent = `Félicitations, ${userData.profile.firstname}!`; currentDayDisplay.textContent = 'Terminé !'; workoutContainer.innerHTML = ''; completeDayBtn.classList.add('hidden'); completionMessage.classList.add('hidden'); }
+        
+        function addAppEventListeners() {
+            document.body.addEventListener('click', e => {
+                const dayBox = e.target.closest('.day-box');
+                if (dayBox && dayBox.dataset.day) {
+                    renderWorkoutScreen(parseInt(dayBox.dataset.day, 10));
+                    return;
+                }
+                const accordionHeader = e.target.closest('.accordion-header');
+                if (accordionHeader) {
+                    const content = accordionHeader.nextElementSibling;
+                    const isActive = accordionHeader.classList.toggle('active');
+                    content.style.maxHeight = isActive ? content.scrollHeight + "px" : '0px';
+                    return;
+                }
+                const timerBtn = e.target.closest('.timer-btn');
+                if (timerBtn) {
+                    e.stopPropagation();
+                    const timerContainer = timerBtn.closest('.timer-container');
+                    const timerId = timerContainer.dataset.timerId;
+                    const action = timerBtn.dataset.action;
+                    handleTimerAction(timerId, action);
+                    return;
+                }
+            });
+
+            document.querySelectorAll('.next-btn').forEach(btn => btn.addEventListener('click', () => { if (validateStep(currentStep)) { if (currentStep < steps.length - 1) { currentStep++; updateStepVisibility(); } } else { alert("Veuillez remplir tous les champs requis."); } }));
+            document.querySelectorAll('.prev-btn').forEach(btn => btn.addEventListener('click', () => { if (currentStep > 0) { currentStep--; updateStepVisibility(); } }));
+            questionnaireForm.addEventListener('submit', async e => {
+                e.preventDefault(); if (!validateStep(currentStep)) { alert("Veuillez sélectionner une zone à cibler."); return; }
+                showScreen('loading'); const formData = new FormData(questionnaireForm), equipment = Array.from(formData.getAll('equipment'));
+                const profile = { firstname: formData.get('firstname'), lastname: formData.get('lastname'), age: formData.get('age'), gender: formData.get('gender'), experience: formData.get('experience'), goal: formData.get('goal'), equipment: equipment.length > 0 ? equipment : ['bodyweight'], target: formData.get('target'), };
+                userData = { profile, currentDay: 1, plan: generateFullProgram(profile) }; await saveUserData(); showScreen('overview');
+            });
+            backToOverviewBtn.addEventListener('click', () => showScreen('overview'));
+            resetProgramBtn.addEventListener('click', resetUserData);
+            finalResetBtn.addEventListener('click', resetUserData);
+            completeDayBtn.addEventListener('click', async () => { 
+                if (userData.currentDay < 28) {
+                    userData.currentDay++;
+                    await saveUserData();
+                } else if (userData.currentDay === 28) {
+                    userData.currentDay = 29;
+                    await saveUserData();
+                }
+                showScreen('overview');
+            });
+            addQuestionnaireEventListeners();
+        }
+
+        function handleTimerAction(timerId, action) {
+            const state = timerStates[timerId]; if (!state) return;
+            const timerContainer = document.querySelector(`.timer-container[data-timer-id="${timerId}"]`), display = timerContainer.querySelector('.timer-display'), startBtn = timerContainer.querySelector('[data-action="start"]'), pauseBtn = timerContainer.querySelector('[data-action="pause"]'), stopBtn = timerContainer.querySelector('[data-action="stop"]');
+            if (action === 'start') {
+                if (state.status === 'running') return; if (state.status === 'stopped' || state.status === 'finished') { state.timeLeft = state.duration; }
+                state.status = 'running'; startBtn.textContent = 'Reprendre'; startBtn.classList.add('hidden'); pauseBtn.classList.remove('hidden'); stopBtn.classList.remove('hidden');
+                state.intervalId = setInterval(() => {
+                    state.timeLeft--; display.textContent = formatTime(state.timeLeft);
+                    if (state.timeLeft <= 0) { clearInterval(state.intervalId); state.status = 'finished'; display.textContent = "Terminé !"; playEndSound(); startBtn.textContent = 'Recommencer'; startBtn.classList.remove('hidden'); pauseBtn.classList.add('hidden'); stopBtn.classList.add('hidden'); }
+                }, 1000);
+            } else if (action === 'pause') { if (state.status !== 'running') return; state.status = 'paused'; clearInterval(state.intervalId); startBtn.classList.remove('hidden'); pauseBtn.classList.add('hidden'); } 
+            else if (action === 'stop') { state.status = 'stopped'; clearInterval(state.intervalId); state.timeLeft = state.duration; display.textContent = formatTime(state.duration); startBtn.textContent = 'Lancer'; startBtn.classList.remove('hidden'); pauseBtn.classList.add('hidden'); stopBtn.classList.add('hidden'); }
+        }
+        function formatTime(s) { return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`; }
+        function playEndSound() { try { const audioCtx = new (window.AudioContext || window.webkitAudioContext)(), oscillator = audioCtx.createOscillator(); oscillator.type = 'sine'; oscillator.frequency.setValueAtTime(523.25, audioCtx.currentTime); oscillator.connect(audioCtx.destination); oscillator.start(); oscillator.stop(audioCtx.currentTime + .4); } catch (e) { console.warn("L'API Audio n'est pas supportée.", e); } }
+        
+        // Initial call to set up all event listeners
+        addAppEventListeners();
+    </script>
+</body>
+</html>
